@@ -1,9 +1,9 @@
 'use strict';
-var HOUSE_TYPE = {
-  'place': 'Дворец',
-  'flat': 'Квартира',
-  'house': 'Дом',
-  'bungalo': 'Бунгало'};
+var HouseType = {
+  PLACE: 'Дворец',
+  FLAT: 'Квартира',
+  HOUSE: 'Дом',
+  BUNGALO: 'Бунгало'};
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -65,7 +65,7 @@ var createAdverts = function (cnt, xMin, xMax) {
         'title': 'строка, заголовок предложения',
         'address': x + ', ' + y,
         'price': randomInt(MAX_PRICE),
-        'type': Object.keys(HOUSE_TYPE)[randomInt(Object.keys(HOUSE_TYPE).length)],
+        'type': Object.keys(HouseType)[randomInt(Object.keys(HouseType).length)],
         'rooms': rooms,
         'guests': guests,
         'checkin': TIMES[randomInt(TIMES.length)],
@@ -116,7 +116,7 @@ var createCard = function (cardData) {
   card.querySelector('.popup__title').textContent = cardData.offer.title;
   card.querySelector('.popup__text--address').textContent = cardData.offer.address;
   card.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
-  card.querySelector('.popup__type').textContent = HOUSE_TYPE[cardData.offer.type];
+  card.querySelector('.popup__type').textContent = HouseType[cardData.offer.type];
   card.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для '
   + cardData.offer.guests + ' гостей';
   card.querySelector('.popup__text--time').textContent = 'заезд после ' + cardData.offer.checkin + ', выезд до '
