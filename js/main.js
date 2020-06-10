@@ -1,5 +1,9 @@
 'use strict';
-var HOUSE_TYPE = ['place', 'flat', 'house', 'bungalo'];
+var HouseType = {
+  PLACE: 'Дворец',
+  FLAT: 'Квартира',
+  HOUSE: 'Дом',
+  BUNGALO: 'Бунгало'};
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -61,7 +65,7 @@ var createAdverts = function (cnt, xMin, xMax) {
         'title': 'строка, заголовок предложения',
         'address': x + ', ' + y,
         'price': randomInt(MAX_PRICE),
-        'type': HOUSE_TYPE[randomInt(HOUSE_TYPE.length)],
+        'type': Object.keys(HouseType)[randomInt(Object.keys(HouseType).length)],
         'rooms': rooms,
         'guests': guests,
         'checkin': TIMES[randomInt(TIMES.length)],
@@ -105,6 +109,52 @@ var createPinFragment = function (pins) {
   return fragment;
 };
 
+var createCard = function (cardData) {
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var card = cardTemplate.cloneNode(true);
+
+  card.querySelector('.popup__title').textContent = cardData.offer.title;
+  card.querySelector('.popup__text--address').textContent = cardData.offer.address;
+  card.querySelector('.popup__text--price').textContent = cardData.offer.price + '₽/ночь';
+  card.querySelector('.popup__type').textContent = HouseType[cardData.offer.type];
+  card.querySelector('.popup__text--capacity').textContent = cardData.offer.rooms + ' комнаты для '
+  + cardData.offer.guests + ' гостей';
+  card.querySelector('.popup__text--time').textContent = 'заезд после ' + cardData.offer.checkin + ', выезд до '
+  + cardData.offer.checkout;
+  card.querySelector('.popup__description').textContent = cardData.offer.description;
+  card.querySelector('.popup__avatar').src = cardData.author.avatar;
+
+  var features = card.querySelector('.popup__features');
+  if (cardData.offer.features.length > 0) {
+    for (var i = 0; i < FEATURES.length; i++) {
+      var element = FEATURES[i];
+      if (cardData.offer.features.indexOf(element) < 0) {
+        card.querySelector('.popup__feature--' + element).classList.add('hidden');
+      }
+    }
+  } else {
+    features.classList.add('hidden');
+  }
+
+  var photos = card.querySelector('.popup__photos');
+
+  if (cardData.offer.photos.length > 0) {
+    var photo = card.querySelector('.popup__photo');
+    photo.src = cardData.offer.photos[0];
+
+    for (var j = 1; j < cardData.offer.photos.length; j++) {
+      photo = photo.cloneNode(true);
+      photo.src = cardData.offer.photos[j];
+      photos.appendChild(photo);
+    }
+
+  } else {
+    photos.classList.add('hidden');
+  }
+
+  return card;
+};
+
 var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
@@ -114,3 +164,7 @@ var pinsFragment = createPinFragment(adverts);
 
 var pins = document.querySelector('.map__pins');
 pins.appendChild(pinsFragment);
+
+var filters = document.querySelector('.map__filters-container');
+var currentCard = createCard(adverts[0]);
+map.insertBefore(currentCard, filters);
