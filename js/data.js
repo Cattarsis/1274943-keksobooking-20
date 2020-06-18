@@ -60,10 +60,13 @@ window.data = (function () {
     return adverts;
   };
 
+  var map = document.querySelector('.map');
+  var adverts = createAdverts(ADVERTS_COUNT, 0, map.offsetWidth);
   return {
     NO_GUEST_ROOM_COUNT: NO_GUEST_ROOM_COUNT,
     NO_GUEST_VALUE: NO_GUEST_VALUE,
     ADVERTS_COUNT: ADVERTS_COUNT,
+    ADVERTS: adverts,
     createAdverts: createAdverts
   };
 })();

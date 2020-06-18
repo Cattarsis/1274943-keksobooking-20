@@ -61,9 +61,9 @@ window.pin = (function () {
   };
 
   var addPinsToDoc = function () {
-    var adverts = window.data.createAdverts(window.data.ADVERTS_COUNT, 0, map.offsetWidth);
+    // var adverts = window.data.createAdverts(window.data.ADVERTS_COUNT, 0, map.offsetWidth);
 
-    var pinsFragment = createPinFragment(adverts);
+    var pinsFragment = createPinFragment(window.data.ADVERTS);
 
     var pins = document.querySelector('.map__pins');
     pins.appendChild(pinsFragment);

@@ -15,10 +15,12 @@ window.map = function () {
 
   lockMap();
   var unlockMap = function () {
-    mapObj.classList.remove('map--faded');
+    if (mapObj.classList.contains('map--faded')) {
+      mapObj.classList.remove('map--faded');
 
-    window.form.unlockForm();
-    window.pin.addPinsToDoc();
+      window.form.unlockForm();
+      window.pin.addPinsToDoc();
+    }
   };
 
   return {
