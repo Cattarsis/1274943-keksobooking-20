@@ -60,8 +60,7 @@ window.data = (function () {
     return adverts;
   };
 
-  var map = document.querySelector('.map');
-  var adverts = createAdverts(ADVERTS_COUNT, 0, map.offsetWidth);
+  var adverts;
   return {
     NO_GUEST_ROOM_COUNT: NO_GUEST_ROOM_COUNT,
     NO_GUEST_VALUE: NO_GUEST_VALUE,
