@@ -29,5 +29,8 @@ window.util = (function () {
     random: random,
     shuffle: shuffle,
     getRandomArray: getRandomArray
+    // errorShow: function (err) {
+
+    // }
   };
 })();
