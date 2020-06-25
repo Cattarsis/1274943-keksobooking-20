@@ -62,8 +62,6 @@ window.pin = (function () {
 
   var addPinsToDoc = function () {
     window.backend.load(onPinLoad, window.util.errorShow);
-    // window.data.ADVERTS = window.data.createAdverts(window.data.ADVERTS_COUNT, 0, map.offsetWidth);
-
   };
 
   var onPinLoad = function (data) {

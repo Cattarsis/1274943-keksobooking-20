@@ -60,17 +60,12 @@ window.data = (function () {
     return adverts;
   };
 
-  var loadAdverts = function () {
-    return window.backend.load();
-  };
-
   var adverts;
   return {
     NO_GUEST_ROOM_COUNT: NO_GUEST_ROOM_COUNT,
     NO_GUEST_VALUE: NO_GUEST_VALUE,
     ADVERTS_COUNT: ADVERTS_COUNT,
     ADVERTS: adverts,
-    createAdverts: createAdverts,
-    loadAdverts: loadAdverts
+    createAdverts: createAdverts
   };
 })();

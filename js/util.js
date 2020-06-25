@@ -1,5 +1,7 @@
 'use strict';
 window.util = (function () {
+  var errorHandler;
+
   var randomInt = function (num) {
     return Math.floor(Math.random() * num);
   };
@@ -23,14 +25,30 @@ window.util = (function () {
     return newArray.slice(0, len);
   };
 
+  var closeError = function () {
+    errorHandler.removeEventListener('click', closeError);
+    errorHandler.remove();
+  };
+
+  var errorShow = function (err) {
+
+    if (!errorHandler) {
+      var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
+      errorHandler = errorTemlatr.cloneNode(true);
+    }
+    errorHandler.querySelector('.error__message').textContent = err;
+    errorHandler.querySelector('.error__button').addEventListener('click', closeError);
+
+    document.querySelector('body').appendChild(errorHandler);
+
+  };
+
   return {
     LEFT_MOUSE_CLIC: 0,
     randomInt: randomInt,
     random: random,
     shuffle: shuffle,
-    getRandomArray: getRandomArray
-    // errorShow: function (err) {
-
-    // }
+    getRandomArray: getRandomArray,
+    errorShow: errorShow
   };
 })();
