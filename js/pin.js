@@ -61,8 +61,11 @@ window.pin = (function () {
   };
 
   var addPinsToDoc = function () {
-    window.data.ADVERTS = window.data.createAdverts(window.data.ADVERTS_COUNT, 0, map.offsetWidth);
+    window.backend.load(onPinLoad, window.util.errorShow);
+  };
 
+  var onPinLoad = function (data) {
+    window.data.ADVERTS = data;
     var pinsFragment = createPinFragment(window.data.ADVERTS);
 
     var pins = document.querySelector('.map__pins');
@@ -72,7 +75,7 @@ window.pin = (function () {
   return {
     createPinFragment: createPinFragment,
     getPinCoordinates: getPinCoordinates,
-    addPinsToDoc: addPinsToDoc
+    addPinsToDoc: addPinsToDoc,
   };
 
 })();
