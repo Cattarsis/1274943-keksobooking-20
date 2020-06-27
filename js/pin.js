@@ -3,21 +3,28 @@
 window.pin = (function () {
   var PIN_OFFSET_X = 25;
   var PIN_OFFSET_Y = 70;
+  var MAX_PIN_COUNT = 5;
   var mainPin = document.querySelector('.map__pin--main');
 
   mainPin.addEventListener('mousedown', function (evt) {
     if (evt.button === window.util.LEFT_MOUSE_CLIC) {
-      window.map.unlockMap();
       var pinXY = getPinCoordinates(mainPin, false);
       window.form.setAddress(pinXY.x + ', ' + pinXY.y);
+      window.form.unlockForm();
+      addPinsToDoc();
     }
   });
 
   mainPin.addEventListener('keydown', function (evt) {
     if (evt.key === 'Enter') {
-      window.map.unlockMap();
+      window.form.unlockForm();
+      addPinsToDoc();
     }
   });
+
+  var onPinClick = function (data) {
+    window.card.addCartToDOM(data);
+  };
 
   var map = document.querySelector('.map');
   var createPin = function (pinData) {
@@ -30,15 +37,27 @@ window.pin = (function () {
     pin.style.left = pinData.location.x - PIN_OFFSET_X + 'px';
     pin.style.top = pinData.location.y - PIN_OFFSET_Y + 'px';
 
+    pin.addEventListener('click', onPinClick.bind(undefined, pinData));
+
     return pin;
   };
 
 
+  var pinFilter = function (pins) {
+    var houseTypeFilter = document.querySelector('#housing-type').value;
+    var newPins = pins.slice().filter(function (el) {
+      return el.offer.type === houseTypeFilter || houseTypeFilter === 'any';
+    }).slice(0, MAX_PIN_COUNT);
+
+    return newPins;
+  };
+
   var createPinFragment = function (pins) {
+    var pinsToRender = pinFilter(pins);
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < pins.length; i++) {
-      var pin = pins[i];
+    for (var i = 0; i < pinsToRender.length; i++) {
+      var pin = pinsToRender[i];
       fragment.appendChild(createPin(pin));
     }
     return fragment;
@@ -69,7 +88,14 @@ window.pin = (function () {
     var pinsFragment = createPinFragment(window.data.ADVERTS);
 
     var pins = document.querySelector('.map__pins');
+    Array.from(pins.querySelectorAll('.map__pin')).forEach(function (element) {
+      if (!element.classList.contains('map__pin--main')) {
+        element.remove();
+      }
+    });
     pins.appendChild(pinsFragment);
+
+    window.map.unlockMap();
   };
 
   return {
