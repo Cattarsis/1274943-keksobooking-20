@@ -2,11 +2,11 @@
 
 window.data = (function () {
   // вместо перечисления теперь карта, т.к. в данных с сервера типы жилья в нижнем регистре
-  var houseType = {
-    place: 'Дворец',
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalo: 'Бунгало'};
+  var HouseType = {
+    PLACE: 'Дворец',
+    FLAT: 'Квартира',
+    HOUSE: 'Дом',
+    BUNGALO: 'Бунгало'};
   var TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -41,7 +41,7 @@ window.data = (function () {
           'title': 'строка, заголовок предложения',
           'address': x + ', ' + y,
           'price': window.util.randomInt(MAX_PRICE),
-          'type': Object.keys(houseType)[window.util.randomInt(Object.keys(houseType).length)],
+          'type': Object.keys(HouseType)[window.util.randomInt(Object.keys(HouseType).length)],
           'rooms': rooms,
           'guests': guests,
           'checkin': TIMES[window.util.randomInt(TIMES.length)],
@@ -68,7 +68,7 @@ window.data = (function () {
     ADVERTS_COUNT: ADVERTS_COUNT,
     ADVERTS: adverts,
     FEATURES: FEATURES,
-    houseType: houseType,
+    HouseType: HouseType,
     createAdverts: createAdverts
   };
 })();

@@ -45,7 +45,7 @@ window.pin = (function () {
 
   var pinFilter = function (pins) {
     var houseTypeFilter = document.querySelector('#housing-type').value;
-    var newPins = pins.slice().filter(function (el) {
+    var newPins = pins.filter(function (el) {
       return el.offer.type === houseTypeFilter || houseTypeFilter === 'any';
     }).slice(0, MAX_PIN_COUNT);
 
