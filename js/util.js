@@ -1,6 +1,8 @@
 'use strict';
 window.util = (function () {
   var errorHandler;
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
 
   var randomInt = function (num) {
     return Math.floor(Math.random() * num);
@@ -49,6 +51,16 @@ window.util = (function () {
     random: random,
     shuffle: shuffle,
     getRandomArray: getRandomArray,
-    errorShow: errorShow
+    errorShow: errorShow,
+    isEscEvent: function (evt, action) {
+      if (evt.keyCode === ESC_KEYCODE) {
+        action();
+      }
+    },
+    isEnterEvent: function (evt, action) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        action();
+      }
+    }
   };
 })();

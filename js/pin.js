@@ -26,6 +26,10 @@ window.pin = (function () {
     window.card.addCartToDOM(data);
   };
 
+  var onPinEnterPress = function (evt, data) {
+    window.util.isEscEvent(evt, window.card.addCartToDOM(data));
+  };
+
   var map = document.querySelector('.map');
   var createPin = function (pinData) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -38,6 +42,7 @@ window.pin = (function () {
     pin.style.top = pinData.location.y - PIN_OFFSET_Y + 'px';
 
     pin.addEventListener('click', onPinClick.bind(undefined, pinData));
+    pin.addEventListener('keydown', onPinEnterPress.bind(undefined, pinData));
 
     return pin;
   };
