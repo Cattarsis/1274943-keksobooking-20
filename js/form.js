@@ -64,6 +64,16 @@ window.form = (function () {
     blockGuestValues(roomNumber.value, guestCapacity);
   };
 
+  var onFilterChange = function () {
+    window.pin.addPinsToDoc();
+
+    window.card.cardClose();
+  };
+
+  Array.from(document.querySelectorAll('.map__filter')).forEach(function (el) {
+    el.addEventListener('change', onFilterChange);
+  });
+
   submitButton.addEventListener('click', onRoomCapacityValidate);
   roomNumber.addEventListener('input', onRoomCapacityValidate);
   guestCapacity.addEventListener('input', onRoomCapacityValidate);

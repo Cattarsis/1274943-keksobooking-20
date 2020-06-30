@@ -17,9 +17,6 @@ window.map = function () {
   var unlockMap = function () {
     if (mapObj.classList.contains('map--faded')) {
       mapObj.classList.remove('map--faded');
-
-      window.form.unlockForm();
-      window.pin.addPinsToDoc();
     }
   };
 

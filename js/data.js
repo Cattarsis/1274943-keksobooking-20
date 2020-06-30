@@ -1,6 +1,7 @@
 'use strict';
 
 window.data = (function () {
+  // вместо перечисления теперь карта, т.к. в данных с сервера типы жилья в нижнем регистре
   var HouseType = {
     PLACE: 'Дворец',
     FLAT: 'Квартира',
@@ -66,6 +67,8 @@ window.data = (function () {
     NO_GUEST_VALUE: NO_GUEST_VALUE,
     ADVERTS_COUNT: ADVERTS_COUNT,
     ADVERTS: adverts,
+    FEATURES: FEATURES,
+    HouseType: HouseType,
     createAdverts: createAdverts
   };
 })();
