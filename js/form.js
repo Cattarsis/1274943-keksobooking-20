@@ -16,7 +16,7 @@ window.form = (function () {
   var adForm = document.querySelector('.ad-form');
   var adFormElements = adForm.querySelectorAll('.ad-form__element');
   var adFormHeader = document.querySelector('.ad-form-header__input');
-  var addressField = adForm.querySelector('input[name=address]');
+  var addressField = adForm.querySelector('#address');
   var roomNumber = document.querySelector('#room_number');
   var guestCapacity = document.querySelector('#capacity');
   var submitButton = document.querySelector('.ad-form__submit');
@@ -49,7 +49,7 @@ window.form = (function () {
     for (var i = 0; i < adFormElements.length; i++) {
       adFormElements[i].setAttribute('disabled', true);
     }
-    adForm.querySelector('#address').setAttribute('disabled', true);
+    adForm.querySelector('#address').setAttribute('readonly', true);
   };
 
 
@@ -61,8 +61,8 @@ window.form = (function () {
 
     var price = adForm.querySelector('#price');
     price.required = true;
-    price.maxValue = MAX_PRICE;
-    price.minValue = MinPrice[type.value.toUpperCase()];
+    price.max = MAX_PRICE;
+    price.minVa = MinPrice[type.value.toUpperCase()];
     price.placeholder = MinPrice[type.value.toUpperCase()];
 
     avatar.accept = 'image/*';
@@ -104,7 +104,7 @@ window.form = (function () {
 
   var onTypeChange = function (evt) {
     var price = adForm.querySelector('#price');
-    price.minValue = MinPrice[evt.currentTarget.value.toUpperCase()];
+    price.min = MinPrice[evt.currentTarget.value.toUpperCase()];
     price.placeholder = MinPrice[evt.currentTarget.value.toUpperCase()];
   };
 
