@@ -8,8 +8,8 @@ window.pin = (function () {
 
   mainPin.addEventListener('mousedown', function (evt) {
     if (evt.button === window.util.LEFT_MOUSE_CLIC) {
-      var pinXY = getPinCoordinates(mainPin, false);
-      window.form.setAddress(pinXY.x + ', ' + pinXY.y);
+      // var pinXY = getPinCoordinates(mainPin, false);
+      // window.form.setAddress(pinXY.x + ', ' + pinXY.y);
       window.form.unlockForm();
       addPinsToDoc();
     }
@@ -68,10 +68,7 @@ window.pin = (function () {
     return fragment;
   };
 
-  var getPinCoordinates = function (pin, isCircle) {
-    var x = pin.offsetLeft + Math.floor(pin.offsetWidth / 2);
-    var y = pin.offsetTop + Math.floor(pin.offsetHeight / (isCircle ? 2 : 1));
-
+  var getXY = function (x, y) {
     y = y > window.data.MAX_Y ? window.data.MAX_Y : y;
     y = y < window.data.MIN_Y ? window.data.MIN_Y : y;
 
@@ -82,6 +79,13 @@ window.pin = (function () {
       'x': x,
       'y': y
     };
+  };
+
+  var getPinCoordinates = function (pin, isCircle) {
+    var x = pin.offsetLeft + Math.floor(pin.offsetWidth / 2);
+    var y = pin.offsetTop + Math.floor(pin.offsetHeight / (isCircle ? 2 : 1));
+
+    return getXY(x, y);
   };
 
   var addPinsToDoc = function () {
@@ -102,6 +106,70 @@ window.pin = (function () {
 
     window.map.unlockMap();
   };
+
+  var newPinXY = function (evt) {
+    var shift = {
+      x: startCoords.x - evt.clientX,
+      y: startCoords.y - evt.clientY
+    };
+
+    startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var x = (mainPin.offsetLeft - shift.x) + Math.floor(mainPin.offsetWidth / 2);
+    var y = (mainPin.offsetTop - shift.y) + Math.floor(mainPin.offsetHeight / 2);
+
+    var pinCoordinats = getXY(x, y);
+    window.form.setAddress(x + ', ' + y);
+
+    mainPin.style.left = pinCoordinats.x - Math.floor(mainPin.offsetWidth / 2) + 'px';
+    mainPin.style.top = pinCoordinats.y - Math.floor(mainPin.offsetHeight / 2) + 'px';
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    dragged = true;
+
+    newPinXY(moveEvt);
+
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+    if (dragged) {
+      var onClickPreventDefault = function (clickEvt) {
+        clickEvt.preventDefault();
+        mainPin.removeEventListener('click', onClickPreventDefault);
+
+      };
+      mainPin.addEventListener('click', onClickPreventDefault);
+    }
+    newPinXY(upEvt);
+  };
+
+
+  var dragged;
+  var startCoords;
+
+  mainPin.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    dragged = false;
+    startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
 
   return {
     createPinFragment: createPinFragment,

@@ -69,6 +69,8 @@ window.data = (function () {
     ADVERTS: adverts,
     FEATURES: FEATURES,
     HouseType: HouseType,
+    MIN_Y: MIN_Y,
+    MAX_Y: MAX_Y,
     createAdverts: createAdverts
   };
 })();
