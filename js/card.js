@@ -1,6 +1,24 @@
 'use strict';
 
 window.card = (function () {
+
+  var onPopupCloseClick = function () {
+    document.querySelector('.popup__close').removeEventListener('click', onPopupCloseClick);
+    document.removeEventListener('keydown', onPopupEscPress);
+    cardClose();
+  };
+
+  var onPopupEscPress = function (evt) {
+    window.util.isEscEvent(evt, onPopupCloseClick);
+  };
+
+  var cardClose = function () {
+    var card = document.querySelector('.map__card');
+    if (card) {
+      card.remove();
+    }
+  };
+
   var createCard = function (cardData) {
     var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
     var card = cardTemplate.cloneNode(true);
@@ -15,6 +33,9 @@ window.card = (function () {
     + cardData.offer.checkout;
     card.querySelector('.popup__description').textContent = cardData.offer.description;
     card.querySelector('.popup__avatar').src = cardData.author.avatar;
+    card.querySelector('.popup__close').addEventListener('click', onPopupCloseClick);
+
+    document.addEventListener('keydown', onPopupEscPress);
 
     var features = card.querySelector('.popup__features');
     if (cardData.offer.features.length > 0) {
@@ -58,11 +79,6 @@ window.card = (function () {
   return {
     createCard: createCard,
     addCartToDOM: addCartToDOM,
-    cardClose: function () {
-      var card = document.querySelector('.map__card');
-      if (card) {
-        card.remove();
-      }
-    }
+    cardClose: cardClose
   };
 })();

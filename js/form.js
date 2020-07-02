@@ -1,17 +1,30 @@
 'use strict';
 
 window.form = (function () {
+  var MAX_PRICE = 1000000;
+  var MIN_TITLE_LENGTH = 30;
+  var MAX_TITLE_LENGTH = 100;
+  var MinPrice = {
+    PALACE: 10000,
+    FLAT: 1000,
+    HOUSE: 5000,
+    BUNGALO: 0
+  };
 
   var DEFAULT_GUEST_COUNT = 1;
   var DEFAULT_ROOM_COUNT = 1;
   var adForm = document.querySelector('.ad-form');
   var adFormElements = adForm.querySelectorAll('.ad-form__element');
   var adFormHeader = document.querySelector('.ad-form-header__input');
-  var addressField = adForm.querySelector('input[name=address]');
+  var addressField = adForm.querySelector('#address');
   var roomNumber = document.querySelector('#room_number');
   var guestCapacity = document.querySelector('#capacity');
   var submitButton = document.querySelector('.ad-form__submit');
-
+  var type = document.querySelector('#type');
+  var timeIn = document.querySelector('#timein');
+  var timeOut = document.querySelector('#timeout');
+  var avatar = document.querySelector('#avatar');
+  var images = document.querySelector('#images');
 
   var setAddress = function (val) {
     addressField.value = val;
@@ -36,7 +49,25 @@ window.form = (function () {
     for (var i = 0; i < adFormElements.length; i++) {
       adFormElements[i].setAttribute('disabled', true);
     }
-    adForm.querySelector('#address').setAttribute('disabled', true);
+    adForm.querySelector('#address').setAttribute('readonly', true);
+  };
+
+
+  var formValidationAdd = function () {
+    var title = adForm.querySelector('#title');
+    title.required = true;
+    title.minLength = MIN_TITLE_LENGTH;
+    title.maxLength = MAX_TITLE_LENGTH;
+
+    var price = adForm.querySelector('#price');
+    price.required = true;
+    price.max = MAX_PRICE;
+    price.minVa = MinPrice[type.value.toUpperCase()];
+    price.placeholder = MinPrice[type.value.toUpperCase()];
+
+    avatar.accept = 'image/*';
+    images.accept = 'image/*';
+
   };
 
   var unlockForm = function () {
@@ -49,6 +80,7 @@ window.form = (function () {
     guestCapacity.value = DEFAULT_GUEST_COUNT;
 
     blockGuestValues(roomNumber.value, guestCapacity);
+    formValidationAdd();
   };
 
   var onRoomCapacityValidate = function () {
@@ -69,6 +101,25 @@ window.form = (function () {
 
     window.card.cardClose();
   };
+
+  var onTypeChange = function (evt) {
+    var price = adForm.querySelector('#price');
+    price.min = MinPrice[evt.currentTarget.value.toUpperCase()];
+    price.placeholder = MinPrice[evt.currentTarget.value.toUpperCase()];
+  };
+
+  var onTimeChange = function (evt) {
+    if (evt.currentTarget.id === 'timein') {
+      timeOut.value = timeIn.value;
+    } else {
+      timeIn.value = timeOut.value;
+    }
+  };
+
+  type.addEventListener('change', onTypeChange);
+
+  timeIn.addEventListener('change', onTimeChange);
+  timeOut.addEventListener('change', onTimeChange);
 
   Array.from(document.querySelectorAll('.map__filter')).forEach(function (el) {
     el.addEventListener('change', onFilterChange);
