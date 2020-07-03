@@ -3,24 +3,31 @@
 window.pin = (function () {
   var PIN_OFFSET_X = 25;
   var PIN_OFFSET_Y = 70;
+  var MAIN_PIN_OFFSET_Y = 80;
   var MAX_PIN_COUNT = 5;
   var mainPin = document.querySelector('.map__pin--main');
 
-  mainPin.addEventListener('mousedown', function (evt) {
-    if (evt.button === window.util.LEFT_MOUSE_CLIC) {
-      // var pinXY = getPinCoordinates(mainPin, false);
-      // window.form.setAddress(pinXY.x + ', ' + pinXY.y);
-      window.form.unlockForm();
-      addPinsToDoc();
-    }
-  });
+  var unlock = function () {
+    window.form.unlockForm();
+    addPinsToDoc();
+    mainPin.removeEventListener('mousedown', onInactivPinClick);
+    mainPin.removeEventListener('keydown', onInactivPinKeydown);
+  };
 
-  mainPin.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter') {
-      window.form.unlockForm();
-      addPinsToDoc();
+  var onInactivPinClick = function (evt) {
+    if (evt.button === window.util.LEFT_MOUSE_CLIC) {
+      unlock();
     }
-  });
+  };
+
+  var onInactivPinKeydown = function (evt) {
+    window.util.isEnterEvent(evt, unlock);
+  };
+
+  var addInactivePinEventListners = function () {
+    mainPin.addEventListener('mousedown', onInactivPinClick);
+    mainPin.addEventListener('keydown', onInactivPinKeydown);
+  };
 
   var onPinClick = function (data) {
     window.card.addCartToDOM(data);
@@ -81,9 +88,9 @@ window.pin = (function () {
     };
   };
 
-  var getPinCoordinates = function (pin, isCircle) {
+  var getMainPinCoordinates = function (pin, isCircle) {
     var x = pin.offsetLeft + Math.floor(pin.offsetWidth / 2);
-    var y = pin.offsetTop + Math.floor(pin.offsetHeight / (isCircle ? 2 : 1));
+    var y = pin.offsetTop + (isCircle ? Math.floor(pin.offsetHeight / 2) : MAIN_PIN_OFFSET_Y);
 
     return getXY(x, y);
   };
@@ -119,13 +126,13 @@ window.pin = (function () {
     };
 
     var x = (mainPin.offsetLeft - shift.x) + Math.floor(mainPin.offsetWidth / 2);
-    var y = (mainPin.offsetTop - shift.y) + Math.floor(mainPin.offsetHeight / 2);
+    var y = (mainPin.offsetTop - shift.y) + MAIN_PIN_OFFSET_Y;
 
     var pinCoordinats = getXY(x, y);
     window.form.setAddress(x + ', ' + y);
 
     mainPin.style.left = pinCoordinats.x - Math.floor(mainPin.offsetWidth / 2) + 'px';
-    mainPin.style.top = pinCoordinats.y - Math.floor(mainPin.offsetHeight / 2) + 'px';
+    mainPin.style.top = pinCoordinats.y - MAIN_PIN_OFFSET_Y + 'px';
   };
 
   var onMouseMove = function (moveEvt) {
@@ -170,10 +177,10 @@ window.pin = (function () {
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
-
+  addInactivePinEventListners();
   return {
     createPinFragment: createPinFragment,
-    getPinCoordinates: getPinCoordinates,
+    getMainPinCoordinates: getMainPinCoordinates,
     addPinsToDoc: addPinsToDoc,
   };
 
