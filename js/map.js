@@ -9,7 +9,7 @@ window.map = function () {
 
     window.form.lockForm();
 
-    var pinXY = window.pin.getPinCoordinates(mainPin, true);
+    var pinXY = window.pin.getMainPinCoordinates(mainPin, true);
     window.form.setAddress(pinXY.x + ', ' + pinXY.y);
   };
 
