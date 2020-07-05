@@ -1,6 +1,6 @@
 'use strict';
 window.util = (function () {
-  var errorHandler;
+  var modalHandler;
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
 
@@ -27,21 +27,46 @@ window.util = (function () {
     return newArray.slice(0, len);
   };
 
-  var closeError = function () {
-    errorHandler.removeEventListener('click', closeError);
-    errorHandler.remove();
+  var onErrorButtonClick = function () {
+    modalHandler.querySelector('.error__button').removeEventListener('click', onErrorButtonClick);
+    modalClose();
   };
 
   var errorShow = function (err) {
 
-    if (!errorHandler) {
-      var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
-      errorHandler = errorTemlatr.cloneNode(true);
-    }
-    errorHandler.querySelector('.error__message').textContent = err;
-    errorHandler.querySelector('.error__button').addEventListener('click', closeError);
+    var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
+    modalHandler = errorTemlatr.cloneNode(true);
+    modalHandler.querySelector('.error__message').textContent = err;
+    modalHandler.querySelector('.error__button').addEventListener('click', onErrorButtonClick);
+    document.addEventListener('click', onModalDocumentClick);
+    document.addEventListener('keydown', onModalKeydown);
 
-    document.querySelector('body').appendChild(errorHandler);
+    document.querySelector('body').appendChild(modalHandler);
+
+  };
+
+  var onModalDocumentClick = function () {
+    modalClose();
+  };
+
+  var onModalKeydown = function (evt) {
+    window.util.isEscEvent(evt, modalClose);
+  };
+
+  var modalClose = function () {
+    modalHandler.remove();
+    document.removeEventListener('click', onModalDocumentClick);
+    document.removeEventListener('keydown', onModalKeydown);
+
+  };
+
+
+  var successShow = function () {
+    var successTemplate = document.querySelector('#success').content.querySelector('.success');
+    modalHandler = successTemplate.cloneNode(true);
+    document.addEventListener('click', onModalDocumentClick);
+    document.addEventListener('keydown', onModalKeydown);
+    document.querySelector('body').appendChild(modalHandler);
 
   };
 
@@ -52,6 +77,7 @@ window.util = (function () {
     shuffle: shuffle,
     getRandomArray: getRandomArray,
     errorShow: errorShow,
+    successShow: successShow,
     isEscEvent: function (evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {
         action();

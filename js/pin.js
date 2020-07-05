@@ -5,9 +5,24 @@ window.pin = (function () {
   var PIN_OFFSET_Y = 70;
   var MAIN_PIN_OFFSET_Y = 80;
   var MAX_PIN_COUNT = 5;
+  var MAIN_PIN_TOP = '375px';
+  var MAIN_PIN_LEFT = '570px';
   var mainPin = document.querySelector('.map__pin--main');
 
-  var unlock = function () {
+  var lockPin = function () {
+    addInactivePinEventListners();
+    removePins();
+
+    // mainPin.style.left = '';
+    // mainPin.style.top = '';
+    mainPin.style.left = MAIN_PIN_LEFT;
+    mainPin.style.top = MAIN_PIN_TOP;
+
+    var addres = getMainPinCoordinates(mainPin, true);
+    window.form.setAddress(addres.x + ', ' + addres.y);
+  };
+
+  var unlockPin = function () {
     window.form.unlockForm();
     addPinsToDoc();
     mainPin.removeEventListener('mousedown', onInactivPinClick);
@@ -16,12 +31,12 @@ window.pin = (function () {
 
   var onInactivPinClick = function (evt) {
     if (evt.button === window.util.LEFT_MOUSE_CLIC) {
-      unlock();
+      unlockPin();
     }
   };
 
   var onInactivPinKeydown = function (evt) {
-    window.util.isEnterEvent(evt, unlock);
+    window.util.isEnterEvent(evt, unlockPin);
   };
 
   var addInactivePinEventListners = function () {
@@ -99,16 +114,20 @@ window.pin = (function () {
     window.backend.load(onPinLoad, window.util.errorShow);
   };
 
+  var removePins = function () {
+    Array.from(document.querySelector('.map__pins').querySelectorAll('.map__pin')).forEach(function (element) {
+      if (!element.classList.contains('map__pin--main')) {
+        element.remove();
+      }
+    });
+  };
+
   var onPinLoad = function (data) {
     window.data.ADVERTS = data;
     var pinsFragment = createPinFragment(window.data.ADVERTS);
 
     var pins = document.querySelector('.map__pins');
-    Array.from(pins.querySelectorAll('.map__pin')).forEach(function (element) {
-      if (!element.classList.contains('map__pin--main')) {
-        element.remove();
-      }
-    });
+    removePins();
     pins.appendChild(pinsFragment);
 
     window.map.unlockMap();
@@ -129,7 +148,7 @@ window.pin = (function () {
     var y = (mainPin.offsetTop - shift.y) + MAIN_PIN_OFFSET_Y;
 
     var pinCoordinats = getXY(x, y);
-    window.form.setAddress(x + ', ' + y);
+    window.form.setAddress(pinCoordinats.x + ', ' + pinCoordinats.y);
 
     mainPin.style.left = pinCoordinats.x - Math.floor(mainPin.offsetWidth / 2) + 'px';
     mainPin.style.top = pinCoordinats.y - MAIN_PIN_OFFSET_Y + 'px';
@@ -182,6 +201,7 @@ window.pin = (function () {
     createPinFragment: createPinFragment,
     getMainPinCoordinates: getMainPinCoordinates,
     addPinsToDoc: addPinsToDoc,
+    lockPin: lockPin
   };
 
 })();
