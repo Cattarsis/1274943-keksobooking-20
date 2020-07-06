@@ -82,10 +82,7 @@ window.form = (function () {
 
   var onSuccessForm = function () {
     lockForm();
-    window.map.lockMap();
-    window.pin.lockPin();
     window.util.successShow();
-    formToDefaultState();
   };
 
   var formValidationAdd = function () {
@@ -110,6 +107,9 @@ window.form = (function () {
       adFormElements[i].setAttribute('disabled', true);
     }
     adForm.querySelector('#address').setAttribute('readonly', true);
+    window.map.lockMap();
+    window.pin.lockPin();
+    formToDefaultState();
   };
 
   var unlockForm = function () {
@@ -179,7 +179,7 @@ window.form = (function () {
   };
 
   var onFormClear = function (evt) {
-    formToDefaultState();
+    lockForm();
     evt.preventDefault();
   };
 
