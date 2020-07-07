@@ -8,6 +8,8 @@ window.pin = (function () {
   var MAIN_PIN_TOP = '375px';
   var MAIN_PIN_LEFT = '570px';
   var mainPin = document.querySelector('.map__pin--main');
+  var lowPrice = 10000;
+  var highPrice = 50000;
 
   var lockPin = function () {
     addInactivePinEventListners();
@@ -71,10 +73,52 @@ window.pin = (function () {
 
 
   var pinFilter = function (pins) {
-    var houseTypeFilter = document.querySelector('#housing-type').value;
+    var houseTypeFilterValue = document.querySelector('#housing-type').value;
+    var housePriceFilterValue = document.querySelector('#housing-price').value;
+    var houseRoomsFilterValue = document.querySelector('#housing-rooms').value;
+    var houseGuestsFilterValue = document.querySelector('#housing-guests').value;
+
+    var houseTypeFilter = function (el) {
+      return el.offer.type === houseTypeFilterValue || houseTypeFilterValue === 'any';
+    };
+
+    var housePriceFilter = function (el) {
+      return housePriceFilterValue === 'middle' && el.offer.price >= lowPrice && el.offer.price < highPrice
+      || housePriceFilterValue === 'low' && el.offer.price < lowPrice
+      || housePriceFilterValue === 'high' && el.offer.price >= highPrice
+      || housePriceFilterValue === 'any';
+    };
+
+    var houseRoomsFilter = function (el) {
+      return houseRoomsFilterValue === el.offer.rooms
+      || houseRoomsFilterValue === 'any';
+    };
+
+    var houseGuestsFilter = function (el) {
+      return houseGuestsFilterValue === el.offer.guests
+      || houseGuestsFilterValue === 'any';
+    };
+
+    var houseFeaturesFilter = function (el) {
+      var features = document.querySelectorAll('.map__features .map__checkbox');
+      var result = true;
+      for (var i = 0; i < features.length; i++) {
+        if (features[i].checked && el.offer.features.indexOf(features[i].value) < 0) {
+          result = false;
+          break;
+        }
+      }
+      return result;
+    };
+
     var newPins = pins.filter(function (el) {
-      return el.offer.type === houseTypeFilter || houseTypeFilter === 'any';
-    }).slice(0, MAX_PIN_COUNT);
+      return houseTypeFilter(el)
+        && housePriceFilter(el)
+        && houseRoomsFilter(el)
+        && houseGuestsFilter(el)
+        && houseFeaturesFilter(el);
+    })
+    .slice(0, MAX_PIN_COUNT);
 
     return newPins;
   };
