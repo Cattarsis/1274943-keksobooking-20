@@ -136,11 +136,11 @@ window.form = (function () {
     blockGuestValues(roomNumber.value, guestCapacity);
   };
 
-  var onFilterChange = function () {
+  var onFilterChange = window.util.debounce(function () {
     window.pin.addPinsToDoc();
-
     window.card.cardClose();
-  };
+  });
+
 
   var onTypeChange = function (evt) {
     price.min = MinPrice[evt.currentTarget.value.toUpperCase()];
@@ -161,6 +161,10 @@ window.form = (function () {
   timeOut.addEventListener('change', onTimeChange);
 
   Array.from(document.querySelectorAll('.map__filter')).forEach(function (el) {
+    el.addEventListener('change', onFilterChange);
+  });
+
+  Array.from(document.querySelectorAll('.map__features .map__checkbox')).forEach(function (el) {
     el.addEventListener('change', onFilterChange);
   });
 
