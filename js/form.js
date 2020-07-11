@@ -10,6 +10,9 @@ window.form = (function () {
     HOUSE: 5000,
     BUNGALO: 0
   };
+  var IMAGE_ACCEPT = 'image/*';
+  var IMAGE_PREVIEW_WIDTH = '100%';
+  var IMAGE_PREVIEW_HEIGHT = '100%';
 
   var DefaultValues = {
     GUEST_COUNT: 1,
@@ -18,6 +21,7 @@ window.form = (function () {
     TIME_IN: '12:00',
     TIME_OUT: '12:00',
     AVATAR: '',
+    AVATAR_IMAGE: 'img/muffin-grey.svg',
     IMAGES: '',
     PRICE: '',
     DESCRIPTION: '',
@@ -37,7 +41,9 @@ window.form = (function () {
   var timeIn = document.querySelector('#timein');
   var timeOut = document.querySelector('#timeout');
   var avatar = document.querySelector('#avatar');
+  var avatarImage = document.querySelector('.ad-form-header__preview img');
   var images = document.querySelector('#images');
+  var imagesWrapper = document.querySelector('.ad-form__photo');
   var price = document.querySelector('#price');
   var title = document.querySelector('#title');
   var description = document.querySelector('#description');
@@ -63,6 +69,7 @@ window.form = (function () {
 
   var formToDefaultState = function () {
     avatar.value = DefaultValues.AVATAR;
+    avatarImage.src = DefaultValues.AVATAR_IMAGE;
     title.value = DefaultValues.TITLE;
     type.value = DefaultValues.TYPE;
     price.value = DefaultValues.PRICE;
@@ -72,6 +79,7 @@ window.form = (function () {
     guestCapacity.value = DefaultValues.GUEST_COUNT;
     description.value = DefaultValues.DESCRIPTION;
     images.value = DefaultValues.IMAGES;
+    imagesWrapper.innerHTML = '';
 
     Array.from(features).forEach(function (el) {
       el.checked = DefaultValues.CHECKED;
@@ -95,8 +103,8 @@ window.form = (function () {
     price.min = MinPrice[type.value.toUpperCase()];
     price.placeholder = MinPrice[type.value.toUpperCase()];
 
-    avatar.accept = 'image/*';
-    images.accept = 'image/*';
+    avatar.accept = IMAGE_ACCEPT;
+    images.accept = IMAGE_ACCEPT;
 
   };
 
@@ -154,6 +162,54 @@ window.form = (function () {
       timeIn.value = timeOut.value;
     }
   };
+
+  var loadImage = function (file, pic) {
+
+    var reader = new FileReader();
+
+    reader.addEventListener('load', function () {
+      pic.src = reader.result;
+    });
+
+    reader.readAsDataURL(file);
+  };
+
+  var onAvatarInputChange = function (evt) {
+    var files = evt.currentTarget.files;
+
+    var matches = Array.from(files).filter(function (it) {
+      return it.type.match(IMAGE_ACCEPT);
+    });
+
+    if (matches) {
+      loadImage(matches[0], avatarImage);
+    }
+  };
+
+  var onImagesInputChange = function (evt) {
+    var files = evt.currentTarget.files;
+
+    var matches = Array.from(files).filter(function (it) {
+      return it.type.match(IMAGE_ACCEPT);
+    });
+
+    var picturesFragment = document.createDocumentFragment();
+    if (matches) {
+      matches.forEach(function (file) {
+        var img = document.createElement('img');
+        img.style.width = IMAGE_PREVIEW_WIDTH;
+        img.style.height = IMAGE_PREVIEW_HEIGHT;
+        loadImage(file, img);
+        picturesFragment.appendChild(img);
+      });
+      imagesWrapper.innerHTML = '';
+      imagesWrapper.appendChild(picturesFragment);
+    }
+
+  };
+
+  avatar.addEventListener('change', onAvatarInputChange);
+  images.addEventListener('change', onImagesInputChange);
 
   type.addEventListener('change', onTypeChange);
 
