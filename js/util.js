@@ -43,7 +43,6 @@ window.util = (function () {
     document.addEventListener('keydown', onModalKeydown);
 
     document.querySelector('body').appendChild(modalHandler);
-
   };
 
   var onModalDocumentClick = function () {
@@ -60,7 +59,6 @@ window.util = (function () {
     document.removeEventListener('keydown', onModalKeydown);
 
   };
-
 
   var successShow = function () {
     var successTemplate = document.querySelector('#success').content.querySelector('.success');

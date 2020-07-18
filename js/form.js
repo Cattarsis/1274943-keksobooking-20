@@ -89,7 +89,7 @@ window.form = (function () {
   };
 
   var onSuccessForm = function () {
-    lockForm();
+    lockAll();
     window.util.successShow();
   };
 
@@ -108,6 +108,12 @@ window.form = (function () {
 
   };
 
+  var lockAll = function () {
+    lockForm();
+    window.map.lockMap();
+    window.pin.lockPin();
+  };
+
   var lockForm = function () {
     adForm.classList.add('ad-form--disabled');
     adFormHeader.setAttribute('disabled', true);
@@ -115,11 +121,10 @@ window.form = (function () {
       adFormElements[i].setAttribute('disabled', true);
     }
     adForm.querySelector('#address').setAttribute('readonly', true);
-    window.map.lockMap();
-    window.pin.lockPin();
     formToDefaultState();
   };
 
+  lockForm();
   var unlockForm = function () {
     adForm.classList.remove('ad-form--disabled');
     adFormHeader.removeAttribute('disabled');
@@ -205,7 +210,6 @@ window.form = (function () {
       imagesWrapper.innerHTML = '';
       imagesWrapper.appendChild(picturesFragment);
     }
-
   };
 
   avatar.addEventListener('change', onAvatarInputChange);
@@ -228,9 +232,12 @@ window.form = (function () {
     onRoomCapacityValidate();
     var isValid = true;
 
-    Array.from(inputs).forEach(function (el) {
-      isValid &= el.checkValidity();
-    });
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].checkValidity()) {
+        isValid = false;
+        break;
+      }
+    }
 
     if (isValid) {
       window.backend.save(new FormData(adForm), onSuccessForm, window.util.errorShow);
@@ -239,7 +246,7 @@ window.form = (function () {
   };
 
   var onFormClear = function (evt) {
-    lockForm();
+    lockAll();
     evt.preventDefault();
   };
 
