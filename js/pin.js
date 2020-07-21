@@ -7,11 +7,20 @@ window.pin = (function () {
   var MAX_PIN_COUNT = 5;
   var MAIN_PIN_TOP = '375px';
   var MAIN_PIN_LEFT = '570px';
-  var mainPin = document.querySelector('.map__pin--main');
-  var lowPrice = 10000;
-  var highPrice = 50000;
+  var LOW_PRICE = 10000;
+  var HIEGHT_PRICE = 50000;
 
-  var lockPin = function () {
+  var mainPin = document.querySelector('.map__pin--main');
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var houseTypeFilter = document.querySelector('#housing-type');
+  var housePriceFilter = document.querySelector('#housing-price');
+  var houseRoomsFilter = document.querySelector('#housing-rooms');
+  var houseGuestsFilter = document.querySelector('#housing-guests');
+  var features = document.querySelectorAll('.map__features .map__checkbox');
+  var map = document.querySelector('.map');
+  var mapRect = map.getBoundingClientRect();
+
+  var lock = function () {
     addInactivePinEventListners();
     removePins();
 
@@ -22,8 +31,8 @@ window.pin = (function () {
     window.form.setAddress(addres.x + ', ' + addres.y);
   };
 
-  var unlockPin = function () {
-    window.form.unlockForm();
+  var unlock = function () {
+    window.form.unlock();
     addPinsToDoc();
     mainPin.removeEventListener('mousedown', onInactivPinClick);
     mainPin.removeEventListener('keydown', onInactivPinKeydown);
@@ -31,12 +40,13 @@ window.pin = (function () {
 
   var onInactivPinClick = function (evt) {
     if (evt.button === window.util.LEFT_MOUSE_CLIC) {
-      unlockPin();
+      unlock();
+      window.map.unlock();
     }
   };
 
   var onInactivPinKeydown = function (evt) {
-    window.util.isEnterEvent(evt, unlockPin);
+    window.util.isEnterEvent(evt, unlock);
   };
 
   var addInactivePinEventListners = function () {
@@ -44,10 +54,13 @@ window.pin = (function () {
     mainPin.addEventListener('keydown', onInactivPinKeydown);
   };
 
-  var activatePin = function (pin, data) {
+  var deactivatePins = function () {
     Array.from(document.querySelectorAll('.map__pin--active')).forEach(function (el) {
       el.classList.remove('map__pin--active');
     });
+  };
+  var activatePin = function (pin, data) {
+    deactivatePins();
     pin.classList.add('map__pin--active');
     window.card.addCartToDOM(data);
   };
@@ -60,13 +73,12 @@ window.pin = (function () {
     window.util.isEnterEvent(evt, activatePin(evt.currentTarget, data));
   };
 
-  var map = document.querySelector('.map');
   var createPin = function (pinData) {
-    var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
     var pin = pinTemplate.cloneNode(true);
 
-    pin.querySelector('img').src = pinData.author.avatar;
-    pin.querySelector('img').alt = pinData.offer.title;
+    var pimImg = pin.querySelector('img');
+    pimImg.src = pinData.author.avatar;
+    pimImg.alt = pinData.offer.title;
 
     pin.style.left = pinData.location.x - PIN_OFFSET_X + 'px';
     pin.style.top = pinData.location.y - PIN_OFFSET_Y + 'px';
@@ -77,71 +89,69 @@ window.pin = (function () {
     return pin;
   };
 
+  var filterExistOffer = function (el) {
+    return el.offer;
+  };
 
-  var pinFilter = function (pins) {
-    var houseTypeFilterValue = document.querySelector('#housing-type').value;
-    var housePriceFilterValue = document.querySelector('#housing-price').value;
-    var houseRoomsFilterValue = document.querySelector('#housing-rooms').value;
-    var houseGuestsFilterValue = document.querySelector('#housing-guests').value;
+  var filterHouseType = function (el) {
+    return el.offer.type === houseTypeFilter.value || houseTypeFilter.value === 'any';
+  };
 
-    var offerExistFilter = function (el) {
-      return el.offer;
-    };
+  var filterHousePrice = function (el) {
+    return housePriceFilter.value === 'middle' && el.offer.price >= LOW_PRICE && el.offer.price < HIEGHT_PRICE
+      || housePriceFilter.value === 'low' && el.offer.price < LOW_PRICE
+      || housePriceFilter.value === 'high' && el.offer.price >= HIEGHT_PRICE
+      || housePriceFilter.value === 'any';
+  };
 
-    var houseTypeFilter = function (el) {
-      return el.offer.type === houseTypeFilterValue || houseTypeFilterValue === 'any';
-    };
+  var filterHouseRooms = function (el) {
+    return houseRoomsFilter.value === el.offer.rooms
+      || houseRoomsFilter.value === 'any';
+  };
 
-    var housePriceFilter = function (el) {
-      return housePriceFilterValue === 'middle' && el.offer.price >= lowPrice && el.offer.price < highPrice
-        || housePriceFilterValue === 'low' && el.offer.price < lowPrice
-        || housePriceFilterValue === 'high' && el.offer.price >= highPrice
-        || housePriceFilterValue === 'any';
-    };
+  var filterHouseGuests = function (el) {
+    return houseGuestsFilter.value === el.offer.guests
+      || houseGuestsFilter.value === 'any';
+  };
 
-    var houseRoomsFilter = function (el) {
-      return houseRoomsFilterValue === el.offer.rooms
-        || houseRoomsFilterValue === 'any';
-    };
-
-    var houseGuestsFilter = function (el) {
-      return houseGuestsFilterValue === el.offer.guests
-        || houseGuestsFilterValue === 'any';
-    };
-
-    var houseFeaturesFilter = function (el) {
-      var features = document.querySelectorAll('.map__features .map__checkbox');
-      var result = true;
-      for (var i = 0; i < features.length; i++) {
-        if (features[i].checked && el.offer.features.indexOf(features[i].value) < 0) {
-          result = false;
-          break;
-        }
+  var filterHouseFeatures = function (el) {
+    var result = true;
+    for (var i = 0; i < features.length; i++) {
+      if (features[i].checked && el.offer.features.indexOf(features[i].value) < 0) {
+        result = false;
+        break;
       }
-      return result;
-    };
+    }
+    return result;
+  };
 
-    var newPins = pins.filter(function (el) {
-      return offerExistFilter(el)
-        && houseTypeFilter(el)
-        && housePriceFilter(el)
-        && houseRoomsFilter(el)
-        && houseGuestsFilter(el)
-        && houseFeaturesFilter(el);
-    })
-      .slice(0, MAX_PIN_COUNT);
+  var filterPin = function (pins) {
+
+    var newPins = [];
+    for (var i = 0; i < pins.length; i++) {
+      if (filterExistOffer(pins[i])
+          && filterHouseType(pins[i])
+          && filterHousePrice(pins[i])
+          && filterHouseRooms(pins[i])
+          && filterHouseGuests(pins[i])
+          && filterHouseFeatures(pins[i])) {
+        newPins.push(pins[i]);
+      }
+      if (newPins.length >= MAX_PIN_COUNT) {
+        break;
+      }
+    }
 
     return newPins;
   };
 
   var createPinFragment = function (pins) {
-    var pinsToRender = pinFilter(pins);
+    var pinsToRender = filterPin(pins);
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < pinsToRender.length; i++) {
-      var pin = pinsToRender[i];
+    pinsToRender.forEach(function (pin) {
       fragment.appendChild(createPin(pin));
-    }
+    });
     return fragment;
   };
 
@@ -166,7 +176,7 @@ window.pin = (function () {
   };
 
   var addPinsToDoc = function () {
-    window.backend.load(onPinLoad, window.util.errorShow);
+    window.backend.load(onPinLoad, window.util.showError);
   };
 
   var removePins = function () {
@@ -185,7 +195,12 @@ window.pin = (function () {
     removePins();
     pins.appendChild(pinsFragment);
 
-    window.map.unlockMap();
+
+  };
+
+  var isNeedMove = function (evt) {
+    return mapHover && mapRect.left <= evt.pageX && mapRect.right >= evt.pageX
+    && mapRect.top + window.data.MIN_Y <= evt.pageY && mapRect.top + window.data.MAX_Y >= evt.pageY;
   };
 
   var newPinXY = function (evt) {
@@ -213,8 +228,9 @@ window.pin = (function () {
     moveEvt.preventDefault();
 
     dragged = true;
-
-    newPinXY(moveEvt);
+    if (isNeedMove(moveEvt)) {
+      newPinXY(moveEvt);
+    }
   };
 
   var onMouseUp = function (upEvt) {
@@ -222,6 +238,8 @@ window.pin = (function () {
 
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+    map.removeEventListener('mouseover', onMouseEnter);
+    map.removeEventListener('mouseout', onMouseLeave);
 
     if (dragged) {
       var onClickPreventDefault = function (clickEvt) {
@@ -231,12 +249,24 @@ window.pin = (function () {
       };
       mainPin.addEventListener('click', onClickPreventDefault);
     }
-    newPinXY(upEvt);
+
+    if (isNeedMove(upEvt)) {
+      newPinXY(upEvt);
+    }
   };
 
   var dragged;
+  var mapHover;
   var startCoords;
 
+  var onMouseLeave = function () {
+    mapHover = false;
+
+  };
+
+  var onMouseEnter = function () {
+    mapHover = true;
+  };
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
@@ -248,12 +278,14 @@ window.pin = (function () {
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+    map.addEventListener('mouseover', onMouseEnter);
+    map.addEventListener('mouseout', onMouseLeave);
   });
   addInactivePinEventListners();
   return {
-    createPinFragment: createPinFragment,
     getMainPinCoordinates: getMainPinCoordinates,
     addPinsToDoc: addPinsToDoc,
-    lockPin: lockPin
+    lock: lock,
+    deactivatePins: deactivatePins
   };
 })();

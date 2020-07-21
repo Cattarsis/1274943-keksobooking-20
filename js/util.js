@@ -1,19 +1,23 @@
 'use strict';
 window.util = (function () {
-  var modalHandler;
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
   var DEBOUNCE_INTERVAL = 500;
 
-  var randomInt = function (num) {
+  var modalHandler;
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
+  var main = document.querySelector('main');
+
+  var getRandomInt = function (num) {
     return Math.floor(Math.random() * num);
   };
-  var random = function (min, max) {
+  var getRandom = function (min, max) {
     return min + Math.floor(Math.random() * (max - min));
   };
-  var shuffle = function (array) {
+  var mix = function (array) {
     for (var i = array.length - 1; i > 0; i--) {
-      var j = randomInt(i + 1);
+      var j = getRandomInt(i + 1);
       var tmp = array[i];
       array[i] = array[j];
       array[j] = tmp;
@@ -21,9 +25,9 @@ window.util = (function () {
   };
 
   var getRandomArray = function (array) {
-    var len = randomInt(array.length + 1);
+    var len = getRandomInt(array.length + 1);
     var newArray = array.slice();
-    shuffle(newArray);
+    mix(newArray);
 
     return newArray.slice(0, len);
   };
@@ -33,16 +37,15 @@ window.util = (function () {
     modalClose();
   };
 
-  var errorShow = function (err) {
+  var showError = function (err) {
 
-    var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
     modalHandler = errorTemlatr.cloneNode(true);
     modalHandler.querySelector('.error__message').textContent = err;
     modalHandler.querySelector('.error__button').addEventListener('click', onErrorButtonClick);
     document.addEventListener('click', onModalDocumentClick);
     document.addEventListener('keydown', onModalKeydown);
 
-    document.querySelector('body').appendChild(modalHandler);
+    main.appendChild(modalHandler);
   };
 
   var onModalDocumentClick = function () {
@@ -60,23 +63,22 @@ window.util = (function () {
 
   };
 
-  var successShow = function () {
-    var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var showSuccess = function () {
     modalHandler = successTemplate.cloneNode(true);
     document.addEventListener('click', onModalDocumentClick);
     document.addEventListener('keydown', onModalKeydown);
-    document.querySelector('body').appendChild(modalHandler);
+    main.appendChild(modalHandler);
 
   };
 
   return {
     LEFT_MOUSE_CLIC: 0,
-    randomInt: randomInt,
-    random: random,
-    shuffle: shuffle,
+    getRandomInt: getRandomInt,
+    getRandom: getRandom,
+    mix: mix,
     getRandomArray: getRandomArray,
-    errorShow: errorShow,
-    successShow: successShow,
+    showError: showError,
+    showSuccess: showSuccess,
     isEscEvent: function (evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {
         action();
