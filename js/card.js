@@ -23,7 +23,6 @@ window.card = (function () {
     }
   };
 
-
   var addFeatures = function (card, featuresValue) {
     var features = card.querySelector('.popup__features');
     if (featuresValue.length > 0) {
@@ -32,12 +31,9 @@ window.card = (function () {
           card.querySelector('.popup__feature--' + el).classList.add('hidden');
         }
       });
-
     } else {
       features.classList.add('hidden');
     }
-
-
   };
 
   var addPhotos = function (card, photosValue) {
@@ -54,7 +50,6 @@ window.card = (function () {
     } else {
       photos.classList.add('hidden');
     }
-
   };
   var fillCardOffer = function (card, offer) {
     card.querySelector('.popup__title').textContent = offer.title;
@@ -89,7 +84,6 @@ window.card = (function () {
   };
 
   return {
-    createCard: createCard,
     addCartToDOM: addCartToDOM,
     cardClose: cardClose
   };

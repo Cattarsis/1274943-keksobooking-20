@@ -9,29 +9,6 @@ window.util = (function () {
   var errorTemlatr = document.querySelector('#error').content.querySelector('.error');
   var main = document.querySelector('main');
 
-  var getRandomInt = function (num) {
-    return Math.floor(Math.random() * num);
-  };
-  var getRandom = function (min, max) {
-    return min + Math.floor(Math.random() * (max - min));
-  };
-  var mix = function (array) {
-    for (var i = array.length - 1; i > 0; i--) {
-      var j = getRandomInt(i + 1);
-      var tmp = array[i];
-      array[i] = array[j];
-      array[j] = tmp;
-    }
-  };
-
-  var getRandomArray = function (array) {
-    var len = getRandomInt(array.length + 1);
-    var newArray = array.slice();
-    mix(newArray);
-
-    return newArray.slice(0, len);
-  };
-
   var onErrorButtonClick = function () {
     modalHandler.querySelector('.error__button').removeEventListener('click', onErrorButtonClick);
     modalClose();
@@ -73,10 +50,6 @@ window.util = (function () {
 
   return {
     LEFT_MOUSE_CLIC: 0,
-    getRandomInt: getRandomInt,
-    getRandom: getRandom,
-    mix: mix,
-    getRandomArray: getRandomArray,
     showError: showError,
     showSuccess: showSuccess,
     isEscEvent: function (evt, action) {

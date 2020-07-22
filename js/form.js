@@ -41,6 +41,7 @@ window.form = (function () {
   var price = document.querySelector('#price');
   var title = document.querySelector('#title');
   var inputs = adForm.querySelectorAll('input');
+  var mainPin = document.querySelector('.map__pin--main');
 
   var setAddress = function (val) {
     addressField.value = val;
@@ -87,13 +88,12 @@ window.form = (function () {
 
     avatar.accept = IMAGE_ACCEPT;
     images.accept = IMAGE_ACCEPT;
-
   };
 
   var lockAll = function () {
-    lock();
     window.map.lock();
     window.pin.lock();
+    lock();
   };
 
   var lock = function () {
@@ -105,6 +105,8 @@ window.form = (function () {
     });
     adForm.querySelector('#address').setAttribute('readonly', true);
     resetFormState();
+    var pinXY = window.pin.getMainPinCoordinates(mainPin, true);
+    setAddress(pinXY.x + ', ' + pinXY.y);
   };
 
   lock();
@@ -115,6 +117,8 @@ window.form = (function () {
       el.removeAttribute('disabled');
     });
     resetFormState();
+    var pinXY = window.pin.getMainPinCoordinates(mainPin, false);
+    setAddress(pinXY.x + ', ' + pinXY.y);
 
     blockGuestValues(roomNumber.value, guestCapacity);
   };
@@ -240,10 +244,8 @@ window.form = (function () {
   resetButton.addEventListener('click', onFormClear);
   roomNumber.addEventListener('input', onRoomCapacityValidate);
   guestCapacity.addEventListener('input', onRoomCapacityValidate);
-  resetFormState();
 
   return {
-    lock: lock,
     unlock: unlock,
     setAddress: setAddress
   };

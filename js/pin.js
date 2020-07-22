@@ -26,9 +26,6 @@ window.pin = (function () {
 
     mainPin.style.left = MAIN_PIN_LEFT;
     mainPin.style.top = MAIN_PIN_TOP;
-
-    var addres = getMainPinCoordinates(mainPin, true);
-    window.form.setAddress(addres.x + ', ' + addres.y);
   };
 
   var unlock = function () {
@@ -105,12 +102,12 @@ window.pin = (function () {
   };
 
   var filterHouseRooms = function (el) {
-    return houseRoomsFilter.value === el.offer.rooms
+    return +houseRoomsFilter.value === el.offer.rooms
       || houseRoomsFilter.value === 'any';
   };
 
   var filterHouseGuests = function (el) {
-    return houseGuestsFilter.value === el.offer.guests
+    return +houseGuestsFilter.value === el.offer.guests
       || houseGuestsFilter.value === 'any';
   };
 
@@ -194,8 +191,6 @@ window.pin = (function () {
     var pins = document.querySelector('.map__pins');
     removePins();
     pins.appendChild(pinsFragment);
-
-
   };
 
   var isNeedMove = function (evt) {
@@ -245,7 +240,6 @@ window.pin = (function () {
       var onClickPreventDefault = function (clickEvt) {
         clickEvt.preventDefault();
         mainPin.removeEventListener('click', onClickPreventDefault);
-
       };
       mainPin.addEventListener('click', onClickPreventDefault);
     }
@@ -261,7 +255,6 @@ window.pin = (function () {
 
   var onMouseLeave = function () {
     mapHover = false;
-
   };
 
   var onMouseEnter = function () {
